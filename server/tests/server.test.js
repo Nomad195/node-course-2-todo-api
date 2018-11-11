@@ -5,13 +5,13 @@ const {app} = require('./../server');
 const {Todo}  = require('./../models/todo');
 
 
-beforEach((done) => {
-    Todo.remove({}).then(() => done());
+beforeEach((done) => {
+    Todo.deleteOne({}).then(() => done());
 });
 
 
 describe('POST /todos', () => {
-    it('Should create a new todo', (done) =>{
+    it('Should create a new todo', (done) => {
         var text = 'Test todo text';
 
         request(app)
@@ -26,28 +26,12 @@ describe('POST /todos', () => {
             return done(err);
         } 
 
-        Todo.find().then((Todo) => {
-            expect(Todo.length).toBe(1);
-            expect(Todo[0].text).toBe(text);
-            done();
+        Todo.find().then((todos) => {
+            expect(todos.length).toBe(1);
+            expect(todos[0].text).toBe(text);
+            done(); 
         }).catch((e) => done(e));
     });
 });
-
-it('should not create todo with invalid body data', (done) => {
-    request(app)
-    .post('/todos')
-    .send({})
-    .expect(400)
-    .end((err, res) => {
-        if (err){
-            return done(err);
-        }
-        Todo.find().then((todos) => {
-            expect(todos.length).toBe(0);
-            done();
-        }).catch((e)  => done(e));
-    });
 });
 
-});
